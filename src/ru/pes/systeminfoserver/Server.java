@@ -2,13 +2,16 @@ package ru.pes.systeminfoserver;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import org.apache.log4j.Logger;
 
 
 public class Server implements Runnable{
 
     private final int PORT;
+    private static final Logger logger = Logger.getLogger(Server.class);
     
     public Server(int port) {
+        logger.info("Server started.");
         this.PORT = port;
     }
     
@@ -20,7 +23,7 @@ public class Server implements Runnable{
         try {
             server = new ServerSocket(PORT);
         } catch (IOException e) {
-            System.out.println("Порт " + PORT + " уже используется! " + e.getMessage());
+            logger.error("Порт " + PORT + " уже используется! ", e);
             System.exit(-1);
         }
         
@@ -31,7 +34,7 @@ public class Server implements Runnable{
                 Thread t = new Thread(w);
                 t.start();
             } catch (IOException e) {
-                System.out.println("Неудалось создать подключение на порту 4321! " + e.getMessage());
+                logger.error("Неудалось создать новый поток ", e);
                 System.exit(-1);
             }
         }

@@ -9,6 +9,7 @@ import java.net.Socket;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import org.apache.log4j.Logger;
 import ru.pes.systeminfoserver.utils.ServerUtil;
 
 // Класс для взаимодествия с клиентской частью
@@ -18,6 +19,7 @@ public class Worker implements Runnable {
     private boolean run = true;
     private BufferedReader in = null;
     private PrintWriter out = null;
+    private static final Logger logger = Logger.getLogger(Worker.class);
 
     public Worker(Socket client) {
         this.CLIENT = client;
@@ -33,7 +35,7 @@ public class Worker implements Runnable {
             in = new BufferedReader(new InputStreamReader(CLIENT.getInputStream(), "Cp1251"));
             out = new PrintWriter(CLIENT.getOutputStream(), true);
         } catch (IOException e) {
-            // Подключить логер
+            logger.error("Неудалось создать поток ввода/вывоа", e);
         }
 
         while (run) {
@@ -60,23 +62,21 @@ public class Worker implements Runnable {
 
                 }
             } catch (IOException e) {
-                // Подключить логер
+                logger.error("Неудалось прочитать сообщение от клиента ", e);
             }
         }
 
     }
 
-    private int shutDown() {
+    private void shutDown() {
         run = false;
         try {
             out.close();
             in.close();
             CLIENT.close();
         } catch (IOException e) {
-            return 4; // Подключить логер
+            logger.error("Неудалось закрыть подключение ", e);
         }
-
-        return 0;
     }
 
 }

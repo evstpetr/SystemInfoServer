@@ -9,12 +9,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.apache.log4j.Logger;
 import ru.pes.systeminfoserver.object.SoftInformation;
 import ru.pes.systeminfoserver.object.SystemInformation;
 
 // Класс для работы с БД, все тривиально
 public class DBConnector {
 
+    private static final Logger logger = Logger.getLogger(DBConnector.class);
     private static Connection con;
     private static PreparedStatement pstmt;
     private static final String WRITE_SI_SQL = "INSERT INTO pc (inv, location, department, pc_name, mb_vendor, "
@@ -47,13 +49,14 @@ public class DBConnector {
             pstmt.executeUpdate();
 
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            logger.error("Ошибка в SQL запросе ", ex);
         } finally {
             if (con != null) {
                 try {
                     con.close();
+                    logger.info("Соединение с базой закрыто!");
                 } catch (SQLException se) {
-                    System.out.println("Не удалось добавить в БД " + se.getMessage());
+                    logger.error("Неудалось закрыть соединение с БД ", se);
                 }
             }
         }
@@ -67,8 +70,7 @@ public class DBConnector {
             pstmt = con.prepareStatement(WRITE_SOFT_SQL);
             
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(bout);
-            
+            ObjectOutputStream oos = new ObjectOutputStream(bout);           
             oos.writeObject(si);
             oos.close();
             byte[] bytes = bout.toByteArray();
@@ -79,12 +81,14 @@ public class DBConnector {
 
         } catch (SQLException | IOException ex) {
             System.out.println("!!! " + ex.getMessage());
+            logger.error("Неудалось добавить информацию о ПО ", ex);
         } finally {
             if (con != null) {
                 try {
                     con.close();
+                    logger.info("Соединение с базой закрыто!");
                 } catch (SQLException se) {
-                    System.out.println("Не удалось добавить в БД " + se.getMessage());
+                    logger.error("Неудалось закрыть соединение с БД ", se);
                 }
             }
         }
@@ -104,7 +108,7 @@ public class DBConnector {
             rs.close();
             ps.close();
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            logger.error("Ошибка при получении объекта из БД ", ex);
         }
         
         return res;
@@ -116,6 +120,7 @@ public class DBConnector {
         String password = "azatIER75";
         Connection conn = DriverManager.getConnection(url, username, password);
         System.out.println("Соединение с базой установленно!");
+        logger.info("Соединение с базой установленно!");
         return conn;
         
     }

@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import org.apache.log4j.Logger;
 import ru.pes.systeminfoserver.db.DBConnector;
 import ru.pes.systeminfoserver.object.SoftInformation;
 import ru.pes.systeminfoserver.object.SystemInformation;
@@ -11,6 +12,8 @@ import ru.pes.systeminfoserver.object.SystemInformation;
 // Вспомогательный класс для работы с базой и форматом JSON
 public class ServerUtil {
 
+    private static final Logger logger = Logger.getLogger(ServerUtil.class);
+    
     public static void saveSystemInformationIntoBase(JsonObject sysJSON, JsonObject softJSON) {
 
         try {
@@ -19,7 +22,7 @@ public class ServerUtil {
             DBConnector.InsertSystemInformation(si);
             DBConnector.InsertSoftInformation(soft, DBConnector.getPcId(si.getINVENTORY_NUMBER()));
         } catch (UnsupportedEncodingException ex) {
-            System.out.println(ex.getMessage());
+            logger.error("Encoding error ", ex);
         }
 
     }
