@@ -109,6 +109,15 @@ public class DBConnector {
             ps.close();
         } catch (SQLException ex) {
             logger.error("Ошибка при получении объекта из БД ", ex);
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                    logger.info("Соединение с базой закрыто!");
+                } catch (SQLException se) {
+                    logger.error("Неудалось закрыть соединение с БД ", se);
+                }
+            }
         }
         
         return res;
