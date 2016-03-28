@@ -9,6 +9,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.log4j.Logger;
 import ru.pes.systeminfoserver.object.SoftInformation;
 import ru.pes.systeminfoserver.object.SystemInformation;
@@ -70,8 +72,11 @@ public class DBConnector {
             pstmt = con.prepareStatement(WRITE_SOFT_SQL);
             
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(bout);           
-            oos.writeObject(si);
+            ObjectOutputStream oos = new ObjectOutputStream(bout);   
+            List<ArrayList<String>> list = new ArrayList<>();
+            list.add(si.getSOFT());
+            list.add(si.getSOFT86());
+            oos.writeObject(list);
             oos.close();
             byte[] bytes = bout.toByteArray();
             pstmt.setString(1, pcID);
